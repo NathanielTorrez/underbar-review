@@ -287,6 +287,27 @@
   // Like extend, but doesn't ever overwrite a key that already
   // exists in obj
   _.defaults = function(obj) {
+    var numArgs = arguments.length;
+
+    if (numArgs < 2 || obj === null){
+      return obj
+    }
+
+
+    for(var i = 0; i < numArgs; i++) {
+      var currentArgument = arguments[i];
+      var currentKeys = Object.keys(currentArgument);
+
+      for(var j = 0; j < currentKeys.length; j++) {
+        var individualKey = currentKeys[j];
+        if(obj[individualKey] !== undefined){
+          continue;
+        }
+        else { obj[individualKey] = currentArgument[individualKey];
+        }
+      }
+    }
+    return obj;
   };
 
 
@@ -330,6 +351,19 @@
   // already computed the result for the given argument and return that value
   // instead if possible.
   _.memoize = function(func) {
+    var memoizedAnswer = {};
+    var memoization = function () {
+      var args = JSON.stringify(arguments);
+
+      if (args in memoizedAnswer) {
+        return memoizedAnswer[args]
+      } else {
+        var answer = func(arguments[0], arguments[1])
+        memoizedAnswer[args] = answer;
+        return answer
+      }
+    }
+    return memoization
   };
 
   // Delays a function for the given number of milliseconds, and then calls
@@ -339,6 +373,14 @@
   // parameter. For example _.delay(someFunction, 500, 'a', 'b') will
   // call someFunction('a', 'b') after 500ms
   _.delay = function(func, wait) {
+
+    if (arguments.length > 2) {
+      return setTimeout(func(arguments[2], arguments[3]), wait);
+    } else {
+      return setTimeout(function () {
+        return func(arguments[2], arguments[3]);
+      }, wait)
+    }
   };
 
 
@@ -353,6 +395,22 @@
   // input array. For a tip on how to make a copy of an array, see:
   // http://mdn.io/Array.prototype.slice
   _.shuffle = function(array) {
+    // creates a copy of the array
+    var copy = array.slice();
+
+    var length = copy.length;
+
+    var lastIndex = length - 1;
+
+    for (var i = 0; i < lastIndex; i++) {
+      var random = i + Math.floor(Math.random() * (length - i + 1))
+      var temp = copy[i];
+      copy[i] = copy[random];
+      copy[random] = temp;
+      return copy.slice(0, length)
+    }
+
+
   };
 
 
